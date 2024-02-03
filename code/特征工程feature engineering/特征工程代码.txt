@@ -1,0 +1,254 @@
+table(:,1)=Wimbledonfeaturedmatches(:,1)
+table(:,2)=Wimbledonfeaturedmatches(:,2)
+table(:,3)=Wimbledonfeaturedmatches(:,3)
+table(:,4)=Wimbledonfeaturedmatches(:,4)
+table(:,5:11)=Wimbledonfeaturedmatches(:,5:11)
+table.Properties.VariableNames{'Var2'}='player1'
+table.Properties.VariableNames{'Var3'}='player2'
+table.Properties.VariableNames{'Var4'}='elapsed_time'
+table.Properties.VariableNames{'Var5'}='set_no'
+table.Properties.VariableNames{'Var6'}='game_no'
+table.Properties.VariableNames{'Var7'}='point_no'
+table.Properties.VariableNames{'Var8'}='p1_sets'
+table.Properties.VariableNames{'Var9'}='p2_sets'
+table.Properties.VariableNames{'Var10'}='p1_games'
+table.Properties.VariableNames{'Var11'}='p2_games'
+time=table.elapsed_time
+timeseconds=3600*hour(time)+60*minute(time)+second(time)
+table1=addvars(table,timeseconds)
+j=0
+for i=1:7283
+    if Wimbledonfeaturedmatches.match_id(i)~=Wimbledonfeaturedmatches.match_id(i+1)
+        j=j+1
+        matchcut(j)=i
+    end
+end
+timeduration=5%%可以通过修改这个改变计算的时间区间
+for i=timeduration+1:7284
+    spendtime(i)=0
+    spendtime(i)=timeseconds(i)-timeseconds(i-timeduration)
+end%%有些人的比赛数据没有时间
+for i=timeduration+1:7284
+    if spendtime(i)<0||spendtime(i)>1000
+       spendtime(i)=0
+    end
+end%%将不合理的经历时间数据设置为0
+table1(:,13)=array2table(spendtime.')
+table1.Properties.VariableNames{'Var13'}='spendtimeinlastfewshots'
+%%将过去几球的数据粘贴上去
+for i=timeduration+1:7284
+    p1serveno(i)=0
+    p2serveno(i)=0
+    for j=i-timeduration:i-1
+        if Wimbledonfeaturedmatches.server(j)==1
+            p1serveno(i)=p1serveno(i)+1
+        else
+            p2serveno(i)=p2serveno(i)+1
+        end
+    end
+end%%算过去几个球里面两个人分别发了几个球
+table6=addvars(table1,p1serveno.')
+table7=addvars(table6,p2serveno.')
+%%进行结算
+for i=timeduration+1:7284
+    p1aceno(i)=0
+    p2aceno(i)=0
+    for j=i-timeduration:i-1
+        if Wimbledonfeaturedmatches.p1_ace(j)==1
+            p1aceno(i)=p1aceno(i)+1
+        end
+        if Wimbledonfeaturedmatches.p2_ace(j)==1
+            p2aceno(i)=p2aceno(i)+1
+        end
+    end
+end%%算算过去几个球中两个人发了几个ace球
+table12=addvars(table7,p1aceno.')
+table13=addvars(table12,p2aceno.')
+table13.Properties.VariableNames{'Var14'}='p1serveno'
+table13.Properties.VariableNames{'Var15'}='p2serveno'
+table13.Properties.VariableNames{'Var16'}='p1aceno'
+table13.Properties.VariableNames{'Var17'}='p2aceno'
+%%结算
+temp1=table13
+for i=timeduration+1:7284
+    p1firstserveinnum(i)=0
+    p2firstserveinnum(i)=0
+    for j=i-timeduration:i-1
+        if Wimbledonfeaturedmatches.server(j)==1&&Wimbledonfeaturedmatches.serve_no(j)==1
+            p1firstserveinnum(i)=p1firstserveinnum(i)+1
+        end
+        if Wimbledonfeaturedmatches.server(j)==2&&Wimbledonfeaturedmatches.serve_no(j)==1
+            p2firstserveinnum(i)=p2firstserveinnum(i)+1
+        end
+    end
+end%%算算过去几个球中两个人的一发进了多少个
+Table44=addvars(temp1,p1firstserveinnum.')
+Table55=addvars(Table44,p2firstserveinnum.')
+Table55.Properties.VariableNames{'Var18'}='p1firstserveinnum'
+Table55.Properties.VariableNames{'Var19'}='p2firstserveinnum'
+temp2=Table55%%结算
+for i=timeduration+1:7284
+    p1doublefaultnum(i)=0
+    p2doublefaultnum(i)=0
+    for j=i-timeduration:i-1
+        if Wimbledonfeaturedmatches.server(j)==1&&Wimbledonfeaturedmatches.p1_double_fault(j)==1
+            p1doublefaultnum(i)=p1doublefaultnum(i)+1
+        end
+        if Wimbledonfeaturedmatches.server(j)==2&&Wimbledonfeaturedmatches.p2_double_fault(j)==1
+            p2doublefaultnum(i)=p2doublefaultnum(i)+1
+        end
+    end
+end%%算算过去几个球中两人分别有几个双误
+Table6=addvars(temp2,p1doublefaultnum.')
+Table7=addvars(Table6,p2doublefaultnum.')
+Table7.Properties.VariableNames{'Var20'}='p1doublefaultnum'
+Table7.Properties.VariableNames{'Var21'}='p2doublefaultnum'
+temp3=Table7%%结算
+for i=timeduration+1:7284
+    p1winnernum(i)=0
+    p2winnernum(i)=0
+    for j=i-timeduration:i-1
+        if Wimbledonfeaturedmatches.p1_winner(j)==1
+            p1winnernum(i)=p1winnernum(i)+1
+        end
+        if Wimbledonfeaturedmatches.p2_winner(j)==1
+            p2winnernum(i)=p2winnernum(i)+1
+        end
+    end
+end%%算算过去几个球中两人分别有几个制胜分
+Table1=addvars(temp3,p1winnernum.')
+Table2=addvars(Table1,p2winnernum.')
+Table2.Properties.VariableNames{'Var22'}='p1winnernum'
+Table2.Properties.VariableNames{'Var23'}='p2winnernum'
+temp4=Table2%%结算
+for i=timeduration+1:7284
+    p1netnum(i)=0
+    p2netnum(i)=0
+    for j=i-timeduration:i-1
+        if Wimbledonfeaturedmatches.p1_net_pt(j)==1
+            p1netnum(i)=p1netnum(i)+1
+        end
+        if Wimbledonfeaturedmatches.p2_net_pt(j)==1
+            p2netnum(i)=p2netnum(i)+1
+        end
+    end
+end%%算算过去几个球中两人分别有几次来到网前
+
+
+Table5=addvars(temp4,p1netnum.')
+Table6=addvars(Table5,p2netnum.')
+Table6.Properties.VariableNames{'Var24'}='p1netnum'
+Table6.Properties.VariableNames{'Var25'}='p2netnum'
+temp5=Table6%%结算
+for i=timeduration+1:7284
+    p1netwinnernum(i)=0
+    p2netwinnernum(i)=0
+    for j=i-timeduration:i-1
+        if Wimbledonfeaturedmatches.p1_net_pt_won(j)==1
+            p1netwinnernum(i)=p1netwinnernum(i)+1
+        end
+        if Wimbledonfeaturedmatches.p2_net_pt_won(j)==1
+            p2netwinnernum(i)=p2netwinnernum(i)+1
+        end
+    end
+end%%算算过去几个球中两人分别有几次网前得分
+Table7=addvars(temp5,p1netwinnernum.')
+Table8=addvars(Table7,p2netwinnernum.')
+Table8.Properties.VariableNames{'Var26'}='p1netwinnernum'
+Table8.Properties.VariableNames{'Var27'}='p2netwinnernum'
+temp6=Table8%%结算
+for i=timeduration+1:7284
+    p1unforcederrornum(i)=0
+    p2unforcederrornum(i)=0
+    for j=i-timeduration:i-1
+        if Wimbledonfeaturedmatches.p1_unf_err(j)==1
+            p1unforcederrornum(i)=p1unforcederrornum(i)+1
+        end
+        if Wimbledonfeaturedmatches.p2_unf_err(j)==1
+            p2unforcederrornum(i)=p2unforcederrornum(i)+1
+        end
+    end
+end%%算算过去几个球中两人分别有几次非受迫失误
+Table9=addvars(temp6,p1unforcederrornum.')
+Table10=addvars(Table9,p2unforcederrornum.')
+Table10.Properties.VariableNames{'Var28'}='p1unforcederrornum'
+Table10.Properties.VariableNames{'Var29'}='p2unforcederrornum'
+temp7=Table10%%结算
+for i=timeduration+1:7284
+    p1rundistance(i)=0
+    p2rundistance(i)=0
+    for j=i-timeduration:i-1
+        p1rundistance(i)=p1rundistance(i)+Wimbledonfeaturedmatches.p1_distance_run(j)
+        p2rundistance(i)=p2rundistance(i)+Wimbledonfeaturedmatches.p2_distance_run(j)
+    end
+end%%算算过去几个球中两人总共的跑动距离
+Table11=addvars(temp7,p1rundistance.')
+Table12=addvars(Table11,p2rundistance.')
+Table12.Properties.VariableNames{'Var30'}='p1rundistance'
+Table12.Properties.VariableNames{'Var31'}='p2rundistance'
+temp8=Table12%%结算
+for i=timeduration+1:7284
+    totalrallylength(i)=0
+    for j=i-timeduration:i-1
+        totalrallylength(i)=totalrallylength(i)+Wimbledonfeaturedmatches.rally_count(j)
+    end
+end%%算算过去几个球中两人总共的回合数
+Table12=addvars(temp8,totalrallylength.')
+Table12.Properties.VariableNames{'Var32'}='totalrallylengthinlastfewpoints'
+temp9=Table12%%结算
+for i=timeduration+1:7284
+    p1breakpointnum(i)=0
+    p2breakpointnum(i)=0
+    for j=i-timeduration:i-1
+        if Wimbledonfeaturedmatches.p1_break_pt(j)==1
+            p1breakpointnum(i)=p1breakpointnum(i)+1
+        end
+        if Wimbledonfeaturedmatches.p2_break_pt(j)==1
+            p2breakpointnum(i)=p2breakpointnum(i)+1
+        end
+    end
+end%%算算过去几个球中两人分别有几个破发点
+Table13=addvars(temp9,p1breakpointnum.')
+Table14=addvars(Table13,p2breakpointnum.')
+Table14.Properties.VariableNames{'Var33'}='p1breakpointnum'
+Table14.Properties.VariableNames{'Var34'}='p2breakpointnum'
+temp10=Table14%%结算
+for i=timeduration+1:7284
+    p1breakpointwinnum(i)=0
+    p2breakpointwinnum(i)=0
+    for j=i-timeduration:i-1
+        if Wimbledonfeaturedmatches.p1_break_pt_won(j)==1
+            p1breakpointwinnum(i)=p1breakpointwinnum(i)+1
+        end
+        if Wimbledonfeaturedmatches.p2_break_pt_won(j)==1
+            p2breakpointwinnum(i)=p2breakpointwinnum(i)+1
+        end
+    end
+end%%算算过去几个球中两人分别赢了几个破发点
+Table15=addvars(temp10,p1breakpointwinnum.')
+Table16=addvars(Table15,p2breakpointwinnum.')
+Table16.Properties.VariableNames{'Var35'}='p1breakpointwinnum'
+Table16.Properties.VariableNames{'Var36'}='p2breakpointwinnum'
+temp11=Table16%%结算
+for i=timeduration+1:7284
+    p1breakpointlosenum(i)=0
+    p2breakpointlosenum(i)=0
+    for j=i-timeduration:i-1
+        if Wimbledonfeaturedmatches.p1_break_pt_missed(j)==1
+            p1breakpointlosenum(i)=p1breakpointlosenum(i)+1
+        end
+        if Wimbledonfeaturedmatches.p2_break_pt_missed(j)==1
+            p2breakpointlosenum(i)=p2breakpointlosenum(i)+1
+        end
+    end
+end%%算算过去几个球中两人分别miss了几个破发点
+Table17=addvars(temp11,p1breakpointlosenum.')
+Table18=addvars(Table17,p2breakpointlosenum.')
+Table18.Properties.VariableNames{'Var37'}='p1breakpointlosenum'
+Table18.Properties.VariableNames{'Var38'}='p2breakpointlosenum'
+temp12=Table18%%结算
+writetable(temp12,'feature.csv')%%导出为csv文件
+
+
+
+
