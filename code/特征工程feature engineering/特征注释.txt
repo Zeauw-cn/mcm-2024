@@ -36,3 +36,11 @@ n代表本特征文件中的特征数据仅来源于某回合的前n个回合的
 36、p2breakpointwinnum：p2在过去n球中赢得破发点的总数
 37、p1breakpointlosenum：p1在过去n球中错过破发点的总数
 38、p2breakpointlosenum：p2在过去n球中错过破发点的总数
+39、p1servewidthindex：p1在过去n球中累计的“发球宽度指数”
+40、p2servewidthindex：p2在过去n球中累计的“发球宽度指数”
+41、p1servedepthindex：p1在过去n球中累计的“发球深度指数”
+42、p2servedepthindex：p2在过去n球中累计的“发球深度指数”
+43、p1servespeedindex：p1在过去n球中累计的“发球速度指数”
+44、p2servespeedindex：p2在过去n球中累计的“发球速度指数”
+45、p1returndepthindex：p1在过去n球中累计的“回球深度指数”
+46、p2returndepthindex：p2在过去n球中累计的“回球深度指数”

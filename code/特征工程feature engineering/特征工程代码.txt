@@ -248,7 +248,193 @@ Table18.Properties.VariableNames{'Var37'}='p1breakpointlosenum'
 Table18.Properties.VariableNames{'Var38'}='p2breakpointlosenum'
 temp12=Table18%%结算
 writetable(temp12,'feature.csv')%%导出为csv文件
+%%第一部分结束
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
+%%第1.5部分，使用滑动5球内的发球速度平均值填充数据
+
+modifiedservespeed=fillmissing(Wimbledonfeaturedmatches.speed_mph,'movmean',5)
+modifiedelapsedtimeseconds=fillmissing(feature5.spendtimeinlastfewshots,'movmean',100)
+changedtotaltime=fillmissing(feature5.timeseconds(503:635),'linear','SamplePoints',feature5.point_no(503:635));
+for i=1:7284
+    if i>=585&&i<=636
+        Changedtotaltime(i)=changedtotaltime(i-584)+3262;
+    else
+        Changedtotaltime(i)=feature5.timeseconds(i);
+    end
+end
+feature5result.timeseconds=Changedtotaltime.';
+
+
+
+
+
+
+
+
+%%第二部分开始
+timeduration=5
+timeduration=5;
+for i=1:7284
+    if Wimbledonfeaturedmatches.serve_width(i)=='B'
+        if Wimbledonfeaturedmatches.server(i)==1
+        p1servewidth(i)=0;
+        p2servewidth(i)=0;
+        end
+        if Wimbledonfeaturedmatches.server(i)==2
+        p1servewidth(i)=0;
+        p2servewidth(i)=0;
+        end
+    end
+    if (Wimbledonfeaturedmatches.serve_width(i)=='BC')||(Wimbledonfeaturedmatches.serve_width(i)=='BW')
+        if Wimbledonfeaturedmatches.server(i)==1
+        p1servewidth(i)=1;
+        p2servewidth(i)=-1;
+        end
+        if Wimbledonfeaturedmatches.server(i)==2
+        p1servewidth(i)=-1;
+        p2servewidth(i)=1;
+        end
+    end
+    if Wimbledonfeaturedmatches.serve_width(i)=='C'||Wimbledonfeaturedmatches.serve_width(i)=='W'
+        if Wimbledonfeaturedmatches.server(i)==1
+        p1servewidth(i)=2;
+        p2servewidth(i)=-2;
+        end
+        if Wimbledonfeaturedmatches.server(i)==2
+        p1servewidth(i)=-2;
+        p2servewidth(i)=2;
+        end
+    end
+end%%以0，1，2标志发球的角度
+W1=addvars(Wimbledonfeaturedmatches,p1servewidth.');
+W2=addvars(W1,p2servewidth.');
+W2.Properties.VariableNames{'Var47'}='p1servewidth';
+W2.Properties.VariableNames{'Var48'}='p2servewidth';%%重命名
+for i=1:7284
+    if Wimbledonfeaturedmatches.serve_depth(i)=='CTL'
+        if Wimbledonfeaturedmatches.server(i)==1
+        p1servedepth(i)=1;
+        p2servedepth(i)=-1;
+        end
+        if Wimbledonfeaturedmatches.server(i)==2
+        p1servedepth(i)=-1;
+        p2servedepth(i)=1;
+        end
+    end
+    if Wimbledonfeaturedmatches.serve_depth(i)=='NCTL'
+        if Wimbledonfeaturedmatches.server(i)==1
+        p1servedepth(i)=0;
+        p2servedepth(i)=0;
+        end
+        if Wimbledonfeaturedmatches.server(i)==2
+        p1servedepth(i)=0;
+        p2servedepth(i)=0;
+        end
+    end
+end%%用1和0标志发球的深度
+W3=addvars(W2,p1servedepth.');
+W4=addvars(W3,p2servedepth.');
+W4.Properties.VariableNames{'Var49'}='p1servedepth';
+W4.Properties.VariableNames{'Var50'}='p2servedepth';%%重命名
+for i=1:7284
+        if Wimbledonfeaturedmatches.server(i)==1
+        p1servespeed(i)=modifiedservespeed(i);
+        p2servespeed(i)=-modifiedservespeed(i);
+        end
+        if Wimbledonfeaturedmatches.server(i)==2
+        p1servespeed(i)=-modifiedservespeed(i);
+        p2servespeed(i)=modifiedservespeed(i);
+        end
+end%%发球为正，接发球为负
+W5=addvars(W4,p1servespeed.');
+W6=addvars(W5,p2servespeed.');
+W6.Properties.VariableNames{'Var51'}='p1servespeed';
+W6.Properties.VariableNames{'Var52'}='p2servespeed';%%重命名
+for i=1:7284
+    if Wimbledonfeaturedmatches.return_depth(i)=='D'
+        if Wimbledonfeaturedmatches.server(i)==1
+        p1returndepth(i)=-1;
+        p2returndepth(i)=1;
+        end
+        if Wimbledonfeaturedmatches.server(i)==2
+        p1returndepth(i)=1;
+        p2returndepth(i)=-1;
+        end
+    end
+    if Wimbledonfeaturedmatches.return_depth(i)=='ND'
+        if Wimbledonfeaturedmatches.server(i)==1
+        p1returndepth(i)=1;
+        p2returndepth(i)=-1;
+        end
+        if Wimbledonfeaturedmatches.server(i)==2
+        p1returndepth(i)=-1;
+        p2returndepth(i)=1;
+        end
+    else
+        p1returndepth(i)=1;
+        p2returndepth(i)=-1;
+    end%%将双误时双方的回球深度指数记为0
+end%%回球深对接发球方有优势，回球浅对接发球方有优势
+W7=addvars(W6,p1returndepth.');
+W8=addvars(W7,p2returndepth.');
+W8.Properties.VariableNames{'Var53'}='p1returndepth';
+W8.Properties.VariableNames{'Var54'}='p2returndepth';
+for i=timeduration+1:7284
+    p1servewidthindex(i)=0;
+    p2servewidthindex(i)=0;
+    for j=i-timeduration:i-1
+            p1servewidthindex(i)=p1servewidthindex(i)+W8.p1servewidth(j);
+            p2servewidthindex(i)=p2servewidthindex(i)+W8.p2servewidth(j);
+    end
+end%%算算过去几个球中两人的发球宽度系数
+Y1=addvars(feature5,p1servewidthindex.');%%这里的feature5可以任意改动
+Y2=addvars(Y1,p2servewidthindex.');
+Y2.Properties.VariableNames{'Var39'}='p1servewidthindex';
+Y2.Properties.VariableNames{'Var40'}='p2servewidthindex';
+temp1=Y2;%%结算
+for i=timeduration+1:7284
+    p1servedepthindex(i)=0;
+    p2servedepthindex(i)=0;
+    for j=i-timeduration:i-1
+            p1servedepthindex(i)=p1servedepthindex(i)+W8.p1servedepth(j);
+            p2servedepthindex(i)=p2servedepthindex(i)+W8.p2servedepth(j);
+    end
+end%%算算过去几个球中两人的发球深度系数
+Y3=addvars(Y2,p1servedepthindex.');
+Y4=addvars(Y3,p2servedepthindex.');
+Y4.Properties.VariableNames{'Var41'}='p1servedepthindex';
+Y4.Properties.VariableNames{'Var42'}='p2servedepthindex';
+temp2=Y4;%%结算
+
+for i=timeduration+1:7284
+    p1servespeedindex(i)=0;
+    p2servespeedindex(i)=0;
+    for j=i-timeduration:i-1
+            p1servespeedindex(i)=p1servespeedindex(i)+W8.p1servespeed(j);
+            p2servespeedindex(i)=p2servespeedindex(i)+W8.p2servespeed(j);
+    end
+end%%算算过去几个球中两人的发球速度系数
+Y5=addvars(Y4,p1servespeedindex.');
+Y6=addvars(Y5,p2servespeedindex.');
+Y6.Properties.VariableNames{'Var43'}='p1servespeedindex';
+Y6.Properties.VariableNames{'Var44'}='p2servespeedindex';
+temp3=Y6;%%结算
+for i=timeduration+1:7284
+    p1returndepthindex(i)=0;
+    p2returndepthindex(i)=0;
+    for j=i-timeduration:i-1
+            p1returndepthindex(i)=p1returndepthindex(i)+W8.p1returndepth(j);
+            p2returndepthindex(i)=p2returndepthindex(i)+W8.p2returndepth(j);
+    end
+end%%算算过去几个球中两人的发球速度系数
+Y7=addvars(Y6,p1returndepthindex.');
+Y8=addvars(Y7,p2returndepthindex.');
+Y8.Properties.VariableNames{'Var45'}='p1returndepthindex';
+Y8.Properties.VariableNames{'Var46'}='p2returndepthindex';
+temp4=Y8;%%结算
+feature5result=Y8;
+feature5result.spendtimeinlastfewshots=modifiedelapsedtimeseconds5;
 
