@@ -1,0 +1,14 @@
+\contentsline {section}{\numberline {1}Background Information}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Some Info on Tennis Scoring}{2}{subsection.1.1}%
+\contentsline {paragraph}{Game}{2}{section*.2}%
+\contentsline {paragraph}{Set}{2}{section*.3}%
+\contentsline {paragraph}{Tie-break Scoring}{2}{section*.4}%
+\contentsline {paragraph}{Best of Five Sets Format}{3}{section*.5}%
+\contentsline {section}{\numberline {2}Who Has A Bigger Momentum? A Visualisation Approach}{3}{section.2}%
+\contentsline {paragraph}{Data Preprocessing}{3}{section*.6}%
+\contentsline {section}{\numberline {3}Do Swings Happen Randomly?}{7}{section.3}%
+\contentsline {paragraph}{Results}{9}{section*.13}%
+\contentsline {section}{\numberline {4}How To Predict Swings?}{10}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Feature Engineering}{10}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Regression Model}{12}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Classification Model}{15}{subsection.4.3}%
